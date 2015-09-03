@@ -1,0 +1,18 @@
+1er block JSON: Début de bataille
+	- type de bataille
+	- version
+	- date
+	- mode de jeu
+	- nom de la carte
+	- id du joueur
+	- nom du joueur
+	- véhicule joué
+	- Région + serveur
+	- Liste des joueurs simple indexée par id: pseudo, tank, clan, côté, peloton?, isAlive
+
+2eme block JSON: Fin de bataille
+	- gros bloc
+		- "arenaUniqueID" : id de la bataille ?
+		- "common" : heure(Time), durée de la bataille en s, raison de fin, côté gagnant
+	- Liste des joueurs simple indexée par id: pseudo, tank, clan, côté, peloton?, isAlive
+	- Liste des frags avec id du joueur
