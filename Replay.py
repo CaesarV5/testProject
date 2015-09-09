@@ -60,8 +60,8 @@ class Replay:
                         except:
                             print "ParseReplay error : offset="+str(offset)+", blockIndice="+str(i+1)+", file="+filename
                             break
+                    self.globalReplayData[filename] = self
                 content.close()
-                self.globalReplayData[filename] = self
         except:
             print "Cannot parse " + filename
 
