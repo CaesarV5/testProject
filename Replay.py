@@ -1,5 +1,5 @@
 # coding=utf-8
-import glob, mmap, struct, thread, json, time
+import glob, mmap, struct, thread, json, time, os
 
 
 class Replay:
@@ -11,6 +11,7 @@ class Replay:
     globalTankPremByDscr = dict()
 
     def __init__(self, filename):
+        self.jsonReplay = []
         self.tanksAlreadyParsed = False
         self.parseTanks()
         self.__parseReplay(filename)
@@ -24,11 +25,11 @@ class Replay:
             print data
         jsonData = json.loads(data)
         if numBlock == 1:
-            self.globalReplayData[filename] = [jsonData]
+            self.jsonReplay = [jsonData]
         else:
-            if "vehicles" in self.globalReplayData[filename][0].keys():
-                del self.globalReplayData[filename][0]["vehicles"]
-            self.globalReplayData[filename].append([jsonData])
+            if "vehicles" in self.jsonReplay[0].keys():
+                del self.jsonReplay[0]["vehicles"]
+            self.jsonReplay.append([jsonData])
         if self.writeInterJSON:
             with open('./test' + str(numBlock) + '.json', 'w') as jsonFile:
                 jsonFile.write(json.dumps(jsonData, sort_keys=True, indent=4))
@@ -60,6 +61,7 @@ class Replay:
                             print "ParseReplay error : offset="+str(offset)+", blockIndice="+str(i+1)+", file="+filename
                             break
                 content.close()
+                self.globalReplayData[filename] = self
         except:
             print "Cannot parse " + filename
 
@@ -69,7 +71,7 @@ class Replay:
     def parseTanks(self):
         if self.tanksAlreadyParsed:
             return
-        with open("./tanks.json", "r") as fd:
+        with open("." + os.sep + "tanks.json", "r") as fd:
             data = fd.read()
             tanksList = json.loads(data)
             for tank in tanksList:
@@ -81,3 +83,31 @@ class Replay:
                 self.globalTankTierByDscr[dscr] = tier
                 self.globalTankPremByDscr[dscr] = isPrem
         self.tanksAlreadyParsed = True
+
+    def findProperty(self, prop):
+        result = []
+        self.__internalFind(self.jsonReplay, prop, result)
+        if len(result) > 0:
+            return result[0]
+        else:
+            return ""
+
+    def __internalFind(self, jsonData, prop, result):
+        if type(jsonData) == list:
+            for data in jsonData:
+                self.__internalFind(data, prop, result)
+        elif type(jsonData) == dict:
+            for key in jsonData.keys():
+                if key == prop:
+                    result.append(jsonData[key])
+                    return
+                else:
+                    self.__internalFind(jsonData[key], prop, result)
+
+    @staticmethod
+    def count():
+        return len(Replay.globalReplayData)
+
+    def isComplete(self):
+        return len(self.jsonReplay) > 1
+
