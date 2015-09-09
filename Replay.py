@@ -11,7 +11,9 @@ class Replay:
     globalTankPremByDscr = dict()
 
     def __init__(self, filename):
-        self.__parseReplay(self, filename)
+        self.tanksAlreadyParsed = False
+        self.parseTanks()
+        self.__parseReplay(filename)
 
     def __readBlock(self, mFile, offset, numBlock, filename):
         dataLength = struct.unpack('<I', mFile[offset:4+offset])[0]
@@ -65,6 +67,8 @@ class Replay:
         return self.globalTankTypeByDscr[typeCompDescr]
 
     def parseTanks(self):
+        if self.tanksAlreadyParsed:
+            return
         with open("./tanks.json", "r") as fd:
             data = fd.read()
             tanksList = json.loads(data)
@@ -76,3 +80,4 @@ class Replay:
                 self.globalTankTypeByDscr[dscr] = type
                 self.globalTankTierByDscr[dscr] = tier
                 self.globalTankPremByDscr[dscr] = isPrem
+        self.tanksAlreadyParsed = True
