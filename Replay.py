@@ -13,6 +13,7 @@ class Replay:
     def __init__(self, filename):
         self.jsonReplay = []
         self.tanksAlreadyParsed = False
+        self.filename = filename
         self.parseTanks()
         self.__parseReplay(filename)
 
@@ -111,3 +112,7 @@ class Replay:
     def isComplete(self):
         return len(self.jsonReplay) > 1
 
+    def dumpJsonToFile(self):
+        for i in range (0, len(self.jsonReplay)):
+            with open(self.filename + str(i) + '.json', 'w') as jsonFile:
+                jsonFile.write(json.dumps(self.jsonReplay[i], sort_keys=True, indent=4))
