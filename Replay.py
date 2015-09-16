@@ -85,15 +85,32 @@ class Replay:
                 self.globalTankPremByDscr[dscr] = isPrem
         self.tanksAlreadyParsed = True
 
-    def findProperty(self, prop):
+    def findProperties(self, prop):
         result = []
-        self.__internalFind(self.jsonReplay, prop, result)
+        self.__internalFinds(self.jsonReplay, prop, result)
         if len(result) > 0:
-            return result[0]
+            return result
         else:
             return ""
 
-    def __internalFind(self, jsonData, prop, result):
+    def findProperty(self, prop):
+        return self.__internalFind(self.jsonReplay, prop)
+
+    def findPropertyIn(self, prop, json):
+        return self.__internalFind(json, prop)
+
+    def __internalFind(self, jsonData, prop):
+        if type(jsonData) == list:
+            for data in jsonData:
+                self.__internalFind(data, prop)
+        elif type(jsonData) == dict:
+            for key in jsonData.keys():
+                if key == prop:
+                    return jsonData[key]
+                else:
+                    self.__internalFind(jsonData[key], prop)
+
+    def __internalFinds(self, jsonData, prop, result):
         if type(jsonData) == list:
             for data in jsonData:
                 self.__internalFind(data, prop, result)
