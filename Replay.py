@@ -102,13 +102,17 @@ class Replay:
     def __internalFind(self, jsonData, prop):
         if type(jsonData) == list:
             for data in jsonData:
-                self.__internalFind(data, prop)
+                result = self.__internalFind(data, prop)
+                if result is not None:
+                    return result
         elif type(jsonData) == dict:
             for key in jsonData.keys():
                 if key == prop:
                     return jsonData[key]
                 else:
-                    self.__internalFind(jsonData[key], prop)
+                    result = self.__internalFind(jsonData[key], prop)
+                    if result is not None:
+                        return result
 
     def __internalFinds(self, jsonData, prop, result):
         if type(jsonData) == list:
